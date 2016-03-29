@@ -1,0 +1,11 @@
+{
+  "rootDirectory": "web",
+  "errorPage": "web/404.html",
+  "tls": {
+    "cert": "certificates/server.crt",
+    "key": "certificates/server.key",
+    "ciphers": "AES128-GCM-SHA256",
+    "port": 8443
+  },
+  "port": 8080
+}
