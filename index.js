@@ -164,6 +164,7 @@
       // Listen for incoming traffic.
       http.createServer(this.expressApp)
         .listen(this.options.port);
+      this.emit(EVENT_STARTED_HTTP_SERVER);
       if (this.options.tls !== null) {
         https.createServer(
           {
@@ -174,6 +175,7 @@
           },
           this.expressApp
         ).listen(this.options.tls.port);
+        this.emit(EVENT_STARTED_HTTPS_SERVER);
       }
     }
   }
