@@ -42,9 +42,7 @@
         tls: null
       };
       this.expressApp = express();
-    },
-
-    webHost = null;
+    };
 
   util.inherits(WebHost, events.EventEmitter);
 
@@ -168,7 +166,7 @@
     }
   };
 
-  webHost = new WebHost();
+  let webHost = new WebHost();
   webHost.on(EVENT_ERROR_READ_CONFIG_FILE, function () {
     console.error('Unable to read configuration file.');
     process.exit(EXIT_CODE_ABNORMAL);
