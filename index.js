@@ -6,15 +6,15 @@
 (function () {
   'use strict';
 
-  let events = require('events'),
+  const events = require('events'),
     fs = require('fs'),
     http = require('http'),
     https = require('https'),
     util = require('util'),
 
-    express = require('express');
+    express = require('express'),
 
-  const EVENT_ERROR_READ_CONFIG_FILE = 'EVENT_ERROR_READ_CONFIG_FILE',
+    EVENT_ERROR_READ_CONFIG_FILE = 'EVENT_ERROR_READ_CONFIG_FILE',
     EVENT_ERROR_PARSE_CONFIG_FILE = 'EVENT_ERROR_PARSE_CONFIG_FILE',
     EVENT_ERROR_READ_TLS_CERTIFICATE = 'EVENT_ERROR_READ_TLS_CERTIFICATE',
     EVENT_ERROR_READ_TLS_PRIVATE_KEY = 'EVENT_ERROR_READ_TLS_PRIVATE_KEY',
