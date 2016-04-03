@@ -18,6 +18,7 @@
     EVENT_ERROR_PARSE_CONFIG_FILE = 'EVENT_ERROR_PARSE_CONFIG_FILE',
     EVENT_ERROR_READ_TLS_CERTIFICATE = 'EVENT_ERROR_READ_TLS_CERTIFICATE',
     EVENT_ERROR_READ_TLS_PRIVATE_KEY = 'EVENT_ERROR_READ_TLS_PRIVATE_KEY',
+    EVENT_ERROR_READ_DHPARAM = 'EVENT_ERROR_READ_DHPARAM',
     EVENT_TLS_ENABLED = 'EVENT_TLS_ENABLED',
     EVENT_SERVER_OPTIONS_READY = 'EVENT_SERVER_OPTIONS_READY',
     EVENT_STARTED_HTTP_SERVER = 'EVENT_STARTED_HTTP_SERVER',
@@ -89,6 +90,7 @@
       cert: null,
       key: null,
       ciphers: null,
+      dhParam: null,
       // Mitigate BEAST attacks.
       honorCipherOrder: true,
       port: null
@@ -106,8 +108,15 @@
         }
         self.options.tls.key = key;
         self.options.tls.ciphers = config.ciphers;
-        self.options.tls.port = config.port;
-        self.emit(EVENT_SERVER_OPTIONS_READY);
+        fs.readFile(config.dhParam, function (readDHparamError, dhParam) {
+          if (readDHparamError !== null) {
+            self.emit(EVENT_ERROR_READ_DHPARAM);
+            return;
+          }
+          self.options.tls.dhParam = dhParam;
+          self.options.tls.port = config.port;
+          self.emit(EVENT_SERVER_OPTIONS_READY);
+        });
       });
     });
   };
@@ -154,7 +163,8 @@
         {
           cert: self.options.tls.cert,
           key: self.options.tls.key,
-          ciphers: self.options.tls.ciphers
+          ciphers: self.options.tls.ciphers,
+          dhparam: self.options.tls.dhParam
         },
         self.expressApp
       ).listen(self.options.tls.port);
@@ -173,6 +183,9 @@
     process.exit(EXIT_CODE_ABNORMAL);
   }).on(EVENT_ERROR_READ_TLS_PRIVATE_KEY, function () {
     console.error('Unable to read TLS private key.');
+    process.exit(EXIT_CODE_ABNORMAL);
+  }).on(EVENT_ERROR_READ_DHPARAM, function () {
+    console.error('Unable to read DH parameters.');
     process.exit(EXIT_CODE_ABNORMAL);
   }).on(EVENT_TLS_ENABLED, function (tlsConfig) {
     webHost.readTLSConfig(tlsConfig);
