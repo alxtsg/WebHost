@@ -6,7 +6,7 @@ A simple static web server, powered by Express and Node.js.
 
 ## Requirements ##
 
-* Node.js (`>=0.10.35`).
+* Node.js (`>=4.3.0`).
 * express (`>=4.13.4`).
 
 ## Installation ##
@@ -23,9 +23,10 @@ The configuration file `config.json` controls the following:
 * `tls`: TLS options for HTTPS support. Set to `null` if HTTPS support is not needed.
     * `cert`: Path to public server certificate file.
     * `key`: Path to private server key file.
-    * `ciphers`: Ciphers to use or exclude. Note that Node.js 0.10.x do not support ECDH ciphers.
-    * `port`: The port to listen for incoming HTTPS request.
-* `port`: The port to listen for incoming HTTP request.
+    * `ciphers`: Ciphers to use or exclude.
+    * `dhParam`: Path to DH parameters file.
+    * `port`: HTTPS server listening port.
+* `port`: HTTP server listening port.
 
 ## Examples ##
 
