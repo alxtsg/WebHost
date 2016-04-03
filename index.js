@@ -52,30 +52,29 @@
    * Parses and reads from configuration file.
    */
   WebHost.prototype.readConfig = function () {
-    let self = this;
     fs.readFile(
       CONFIG_FILE_PATH,
       {
         encoding: 'utf8'
       },
-      function (readError, data) {
+      (readError, data) => {
         let config = null;
         if (readError !== null) {
-          self.emit(EVENT_ERROR_READ_CONFIG_FILE);
+          this.emit(EVENT_ERROR_READ_CONFIG_FILE);
           return;
         }
         try {
           config = JSON.parse(data);
-          self.options.rootDirectory = config.rootDirectory;
-          self.options.errorPage = config.errorPage;
-          self.options.port = config.port;
+          this.options.rootDirectory = config.rootDirectory;
+          this.options.errorPage = config.errorPage;
+          this.options.port = config.port;
           if (config.tls !== null) {
-            self.emit(EVENT_TLS_ENABLED, config.tls);
+            this.emit(EVENT_TLS_ENABLED, config.tls);
           } else {
-            self.emit(EVENT_SERVER_OPTIONS_READY);
+            this.emit(EVENT_SERVER_OPTIONS_READY);
           }
         } catch (parseError) {
-          self.emit(EVENT_ERROR_PARSE_CONFIG_FILE);
+          this.emit(EVENT_ERROR_PARSE_CONFIG_FILE);
         }
       }
     );
@@ -85,8 +84,7 @@
    * Reads TLS certificate file and private key.
    */
   WebHost.prototype.readTLSConfig = function (config) {
-    let self = this;
-    self.options.tls = {
+    this.options.tls = {
       cert: null,
       key: null,
       ciphers: null,
@@ -95,27 +93,27 @@
       honorCipherOrder: true,
       port: null
     };
-    fs.readFile(config.cert, function (readCertError, cert) {
+    fs.readFile(config.cert, (readCertError, cert) => {
       if (readCertError !== null) {
-        self.emit(EVENT_ERROR_READ_TLS_CERTIFICATE);
+        this.emit(EVENT_ERROR_READ_TLS_CERTIFICATE);
         return;
       }
-      self.options.tls.cert = cert;
-      fs.readFile(config.key, function (readKeyError, key) {
+      this.options.tls.cert = cert;
+      fs.readFile(config.key, (readKeyError, key) => {
         if (readKeyError !== null) {
-          self.emit(EVENT_ERROR_READ_TLS_PRIVATE_KEY);
+          this.emit(EVENT_ERROR_READ_TLS_PRIVATE_KEY);
           return;
         }
-        self.options.tls.key = key;
-        self.options.tls.ciphers = config.ciphers;
-        fs.readFile(config.dhParam, function (readDHparamError, dhParam) {
+        this.options.tls.key = key;
+        this.options.tls.ciphers = config.ciphers;
+        fs.readFile(config.dhParam, (readDHparamError, dhParam) => {
           if (readDHparamError !== null) {
-            self.emit(EVENT_ERROR_READ_DHPARAM);
+            this.emit(EVENT_ERROR_READ_DHPARAM);
             return;
           }
-          self.options.tls.dhParam = dhParam;
-          self.options.tls.port = config.port;
-          self.emit(EVENT_SERVER_OPTIONS_READY);
+          this.options.tls.dhParam = dhParam;
+          this.options.tls.port = config.port;
+          this.emit(EVENT_SERVER_OPTIONS_READY);
         });
       });
     });
@@ -125,30 +123,29 @@
    * Starts server.
    */
   WebHost.prototype.start = function () {
-    let self = this;
     // Disable several response headers.
-    self.expressApp.disable('etag');
-    self.expressApp.disable('x-powered-by');
+    this.expressApp.disable('etag');
+    this.expressApp.disable('x-powered-by');
     // Serve static files by express-static.
-    self.expressApp.use(express.static(
-      self.options.rootDirectory,
+    this.expressApp.use(express.static(
+      this.options.rootDirectory,
       {
         etag: false
       }
     ));
     // File not found.
-    self.expressApp.use(function (request, response) {
+    this.expressApp.use((request, response) => {
       let readStream = null;
       response.statusCode = 404;
       response.type('text/html');
       readStream = fs.createReadStream(
-        self.options.errorPage,
+        this.options.errorPage,
         {
           encoding: 'utf8'
         }
       );
       // Cannot read error page.
-      readStream.on('error', function (error) {
+      readStream.on('error', (error) => {
         response.statusCode = 500;
         response.type('text/plain');
         response.end('Internal server error.');
@@ -156,18 +153,18 @@
       readStream.pipe(response);
     });
     // Listen for incoming traffic.
-    http.createServer(self.expressApp)
-      .listen(self.options.port);
-    if (self.options.tls !== null) {
+    http.createServer(this.expressApp)
+      .listen(this.options.port);
+    if (this.options.tls !== null) {
       https.createServer(
         {
-          cert: self.options.tls.cert,
-          key: self.options.tls.key,
-          ciphers: self.options.tls.ciphers,
-          dhparam: self.options.tls.dhParam
+          cert: this.options.tls.cert,
+          key: this.options.tls.key,
+          ciphers: this.options.tls.ciphers,
+          dhparam: this.options.tls.dhParam
         },
-        self.expressApp
-      ).listen(self.options.tls.port);
+        this.expressApp
+      ).listen(this.options.tls.port);
     }
   };
 
