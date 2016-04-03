@@ -2,6 +2,8 @@
  * Simple static web server.
  *
  * @author Alex Tsang <alextsang@live.com>
+ *
+ * @license BSD-3-Clause
  */
 (function () {
   'use strict';
