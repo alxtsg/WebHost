@@ -6,15 +6,15 @@
 (function () {
   'use strict';
 
-  var events = require('events'),
+  let events = require('events'),
     fs = require('fs'),
     http = require('http'),
     https = require('https'),
     util = require('util'),
 
-    express = require('express'),
+    express = require('express');
 
-    EVENT_ERROR_READ_CONFIG_FILE = 'EVENT_ERROR_READ_CONFIG_FILE',
+  const EVENT_ERROR_READ_CONFIG_FILE = 'EVENT_ERROR_READ_CONFIG_FILE',
     EVENT_ERROR_PARSE_CONFIG_FILE = 'EVENT_ERROR_PARSE_CONFIG_FILE',
     EVENT_ERROR_READ_TLS_CERTIFICATE = 'EVENT_ERROR_READ_TLS_CERTIFICATE',
     EVENT_ERROR_READ_TLS_PRIVATE_KEY = 'EVENT_ERROR_READ_TLS_PRIVATE_KEY',
@@ -26,14 +26,14 @@
 
     CONFIG_FILE_PATH = 'config.json',
 
-    EXIT_CODE_ABNORMAL = 1,
+    EXIT_CODE_ABNORMAL = 1;
 
-    /**
-     * Constructor. Initialize web server options and Express instance.
-     *
-     * @class
-     */
-    WebHost = function () {
+  /**
+   * Constructor. Initialize web server options and Express instance.
+   *
+   * @class
+   */
+  let WebHost = function () {
       events.EventEmitter.call(this);
       this.options = {
         rootDirectory: null,
@@ -52,14 +52,14 @@
    * Parses and reads from configuration file.
    */
   WebHost.prototype.readConfig = function () {
-    var self = this;
+    let self = this;
     fs.readFile(
       CONFIG_FILE_PATH,
       {
         encoding: 'utf8'
       },
       function (readError, data) {
-        var config = null;
+        let config = null;
         if (readError !== null) {
           self.emit(EVENT_ERROR_READ_CONFIG_FILE);
           return;
@@ -85,7 +85,7 @@
    * Reads TLS certificate file and private key.
    */
   WebHost.prototype.readTLSConfig = function (config) {
-    var self = this;
+    let self = this;
     self.options.tls = {
       cert: null,
       key: null,
@@ -125,7 +125,7 @@
    * Starts server.
    */
   WebHost.prototype.start = function () {
-    var self = this;
+    let self = this;
     // Disable several response headers.
     self.expressApp.disable('etag');
     self.expressApp.disable('x-powered-by');
@@ -138,7 +138,7 @@
     ));
     // File not found.
     self.expressApp.use(function (request, response) {
-      var readStream = null;
+      let readStream = null;
       response.statusCode = 404;
       response.type('text/html');
       readStream = fs.createReadStream(
