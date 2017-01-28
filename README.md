@@ -43,9 +43,7 @@ Assuming you just want to have a HTTP web server running:
 
 ## TODO ##
 
-* Cache error page.
-* Compression support.
-* Expose more TLS options.
+* Access log.
 
 ## License ##
 
