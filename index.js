@@ -13,6 +13,7 @@ const express = require('express');
 const EventEmitter = require('events');
 const fs = require('fs');
 const https = require('https');
+const path = require('path');
 
 const EVENT_ERROR_READ_CONFIG_FILE = 'EVENT_ERROR_READ_CONFIG_FILE';
 const EVENT_ERROR_PARSE_CONFIG_FILE = 'EVENT_ERROR_PARSE_CONFIG_FILE';
@@ -23,7 +24,10 @@ const EVENT_READ_CONFIG_FILE = 'EVENT_READ_CONFIG_FILE';
 const EVENT_TLS_CONFIG_READY = 'EVENT_TLS_CONFIG_READY';
 const EVENT_STARTED_HTTPS_SERVER = 'EVENT_STARTED_HTTPS_SERVER';
 
-const CONFIG_FILE_PATH = 'config.json';
+const CONFIG_FILE_PATH = path.join(
+  __dirname,
+  'config.json'
+);
 
 const EXIT_CODE_ABNORMAL = 1;
 
@@ -79,9 +83,9 @@ class WebHost extends EventEmitter {
    * configurations.
    *
    * @param {Object} config TLS configurations.
-   * @param {string} config.cert Path to TLS certificate.
-   * @param {string} config.key Path to TLS private key.
-   * @param {string} config.ciphers Ciphers to use, separated by colon.
+   * @param {String} config.cert Path to TLS certificate.
+   * @param {String} config.key Path to TLS private key.
+   * @param {String} config.ciphers Ciphers to use, separated by colon.
    * @param {String} config.ecdhCurve The curve used for ECDH key agreement.
    * @param {String} config.secureProtocol The SSL method to use.
    * @param {number} config.port HTTPS server listening port.
@@ -151,7 +155,8 @@ class WebHost extends EventEmitter {
         cert: this.options.tls.cert,
         key: this.options.tls.key,
         ciphers: this.options.tls.ciphers,
-        dhparam: this.options.tls.dhParam
+        ecdhCurve: this.options.tls.ecdhCurve,
+        secureProtocol: this.options.tls.secureProtocol
       },
       this.expressApp
     ).listen(this.options.tls.port);
