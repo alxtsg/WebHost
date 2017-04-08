@@ -1,5 +1,5 @@
 {
-  "extends": "airbnb-base",
+  "extends": "airbnb",
   "plugins": [
     "import"
   ],
@@ -10,6 +10,7 @@
   "rules": {
     "comma-dangle": "off",
     "linebreak-style": "off",
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "strict": ["error", "global"]
   }
 }
