@@ -2,48 +2,50 @@
 
 ## Description ##
 
-A simple static web server, powered by Express and Node.js.
+A simple static web server, powered by Node.js and Express.
 
 ## Requirements ##
 
 * Node.js (`>=4.4.5`).
-* express (`>=4.14.1`).
+* express (`>=4.15.2`).
 
 ## Installation ##
 
-0. `npm install`.
-1. `node index.js`.
+0. `npm install --production`.
 
 ## Usage ##
 
 The configuration file `config.json` controls the following:
 
-* `rootDirectory`: Root directory of the static files.
-* `errorPage`: Path to the HTML file to be sent when requested file cannot be found (i.e. [HTTP 404](http://en.wikipedia.org/wiki/HTTP_404)).
-* `tls`: TLS options for HTTPS support. Set to `null` if HTTPS support is not needed.
-    * `cert`: Path to public server certificate file.
-    * `key`: Path to private server key file.
-    * `ciphers`: Ciphers to use or exclude.
-    * `dhParam`: Path to DH parameters file.
-    * `port`: HTTPS server listening port.
-* `port`: HTTP server listening port.
+* `rootDirectory`: Root directory of the static files. Default is `web`.
+* `errorPage`: Path to the HTML file to be sent when requested file cannot be found (i.e. [HTTP 404](http://en.wikipedia.org/wiki/HTTP_404)). Default is `web/404.html`.
+* `tls`: TLS options for HTTPS.
+    * `cert`: Path to server certificate key. Default is `certificates/server.crt`.
+    * `key`: Path to server private key. Default is `certificates/server.key`.
+    * `ciphers`: Ciphers to use or exclude. The default ciphers are taken from [Mozilla's Server Side TLS Guidelines](https://wiki.mozilla.org/Security/Server_Side_TLS).
+    * `ecdhCurve`: The curve used for ECDH key agreement. Default is `secp384r1`.
+    * `secureProtocol`: The SSL method to use. Default is `TLSv1_2_method`, which means only TLS 1.2 is accepted.
+    * `port`: HTTPS server listening port. Default is `8443`.
+
+To start WebHost:
+
+    node index.js
 
 ## Examples ##
 
-Assuming you just want to have a HTTP web server running:
+Assume using a self-signed TLS certificate for HTTPS connections, first generate the private key:
 
-* Set `rootDirectory` to `"web"` (default value) or path to directory where Node.js has read permission.
-* Set `errorPage` to `"web/404.html"` (default value) or path to the error page.
-* Set `tls` to `null` (default value).
-* Set `port` to `8080` (default value) or another port isn't currently used by another program.
+    openssl ecparam -genkey -name secp384r1 -out server.key
 
-## Known issues ##
+Then generate the certificate key:
 
-* (None)
+    openssl req -new -x509 -days 365 -key server.key -out server.crt
 
-## TODO ##
+Note that the self-signed certificate generated above will expire in 365 days.
 
-* Access log.
+(Free, trusted certificates can be obtained from [Let's Encrypt](https://letsencrypt.org/).)
+
+Put the generated private key and certificate key under the `certificates` directory.
 
 ## License ##
 

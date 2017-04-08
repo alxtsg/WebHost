@@ -12,17 +12,15 @@ const express = require('express');
 
 const EventEmitter = require('events');
 const fs = require('fs');
-const http = require('http');
 const https = require('https');
 
 const EVENT_ERROR_READ_CONFIG_FILE = 'EVENT_ERROR_READ_CONFIG_FILE';
 const EVENT_ERROR_PARSE_CONFIG_FILE = 'EVENT_ERROR_PARSE_CONFIG_FILE';
 const EVENT_ERROR_READ_TLS_CERTIFICATE = 'EVENT_ERROR_READ_TLS_CERTIFICATE';
 const EVENT_ERROR_READ_TLS_PRIVATE_KEY = 'EVENT_ERROR_READ_TLS_PRIVATE_KEY';
-const EVENT_ERROR_READ_DHPARAM = 'EVENT_ERROR_READ_DHPARAM';
-const EVENT_TLS_ENABLED = 'EVENT_TLS_ENABLED';
-const EVENT_SERVER_OPTIONS_READY = 'EVENT_SERVER_OPTIONS_READY';
-const EVENT_STARTED_HTTP_SERVER = 'EVENT_STARTED_HTTP_SERVER';
+
+const EVENT_READ_CONFIG_FILE = 'EVENT_READ_CONFIG_FILE';
+const EVENT_TLS_CONFIG_READY = 'EVENT_TLS_CONFIG_READY';
 const EVENT_STARTED_HTTPS_SERVER = 'EVENT_STARTED_HTTPS_SERVER';
 
 const CONFIG_FILE_PATH = 'config.json';
@@ -44,7 +42,6 @@ class WebHost extends EventEmitter {
     this.options = {
       rootDirectory: null,
       errorPage: null,
-      port: null,
       tls: null
     };
     this.expressApp = express();
@@ -69,12 +66,7 @@ class WebHost extends EventEmitter {
           config = JSON.parse(data);
           this.options.rootDirectory = config.rootDirectory;
           this.options.errorPage = config.errorPage;
-          this.options.port = config.port;
-          if (config.tls !== null) {
-            this.emit(EVENT_TLS_ENABLED, config.tls);
-          } else {
-            this.emit(EVENT_SERVER_OPTIONS_READY);
-          }
+          this.emit(EVENT_READ_CONFIG_FILE, config.tls);
         } catch (parseError) {
           this.emit(EVENT_ERROR_PARSE_CONFIG_FILE);
         }
@@ -83,24 +75,25 @@ class WebHost extends EventEmitter {
   }
 
   /**
-   * Reads TLS certificate file and private key.
+   * Reads TLS certificate file and private key, and prepare several TLS
+   * configurations.
    *
    * @param {Object} config TLS configurations.
    * @param {string} config.cert Path to TLS certificate.
    * @param {string} config.key Path to TLS private key.
    * @param {string} config.ciphers Ciphers to use, separated by colon.
-   * @param {string} config.dhParam Path to DH parameters file.
+   * @param {String} config.ecdhCurve The curve used for ECDH key agreement.
+   * @param {String} config.secureProtocol The SSL method to use.
    * @param {number} config.port HTTPS server listening port.
    */
   readTLSConfig(config) {
     this.options.tls = {
       cert: null,
       key: null,
-      ciphers: null,
-      dhParam: null,
-      // Mitigate BEAST attacks.
-      honorCipherOrder: true,
-      port: null
+      ciphers: config.ciphers,
+      ecdhCurve: config.ecdhCurve,
+      secureProtocol: config.secureProtocol,
+      port: config.port
     };
     fs.readFile(config.cert, (readCertError, cert) => {
       if (readCertError !== null) {
@@ -114,16 +107,7 @@ class WebHost extends EventEmitter {
           return;
         }
         this.options.tls.key = key;
-        this.options.tls.ciphers = config.ciphers;
-        fs.readFile(config.dhParam, (readDHparamError, dhParam) => {
-          if (readDHparamError !== null) {
-            this.emit(EVENT_ERROR_READ_DHPARAM);
-            return;
-          }
-          this.options.tls.dhParam = dhParam;
-          this.options.tls.port = config.port;
-          this.emit(EVENT_SERVER_OPTIONS_READY);
-        });
+        this.emit(EVENT_TLS_CONFIG_READY);
       });
     });
   }
@@ -161,22 +145,17 @@ class WebHost extends EventEmitter {
       });
       readStream.pipe(response);
     });
-    // Listen for incoming traffic.
-    http.createServer(this.expressApp)
-      .listen(this.options.port);
-    this.emit(EVENT_STARTED_HTTP_SERVER);
-    if (this.options.tls !== null) {
-      https.createServer(
-        {
-          cert: this.options.tls.cert,
-          key: this.options.tls.key,
-          ciphers: this.options.tls.ciphers,
-          dhparam: this.options.tls.dhParam
-        },
-        this.expressApp
-      ).listen(this.options.tls.port);
-      this.emit(EVENT_STARTED_HTTPS_SERVER);
-    }
+    // Create HTTPS server.
+    https.createServer(
+      {
+        cert: this.options.tls.cert,
+        key: this.options.tls.key,
+        ciphers: this.options.tls.ciphers,
+        dhparam: this.options.tls.dhParam
+      },
+      this.expressApp
+    ).listen(this.options.tls.port);
+    this.emit(EVENT_STARTED_HTTPS_SERVER);
   }
 }
 
@@ -197,18 +176,11 @@ webHost.on(EVENT_ERROR_READ_CONFIG_FILE, () => {
   console.error('Unable to read TLS private key.');
   process.exit(EXIT_CODE_ABNORMAL);
 })
-.on(EVENT_ERROR_READ_DHPARAM, () => {
-  console.error('Unable to read DH parameters.');
-  process.exit(EXIT_CODE_ABNORMAL);
+.on(EVENT_READ_CONFIG_FILE, (config) => {
+  webHost.readTLSConfig(config);
 })
-.on(EVENT_TLS_ENABLED, (tlsConfig) => {
-  webHost.readTLSConfig(tlsConfig);
-})
-.on(EVENT_SERVER_OPTIONS_READY, () => {
+.on(EVENT_TLS_CONFIG_READY, () => {
   webHost.start();
-})
-.on(EVENT_STARTED_HTTP_SERVER, () => {
-  console.log('HTTP server started.');
 })
 .on(EVENT_STARTED_HTTPS_SERVER, () => {
   console.log('HTTPS server started.');
