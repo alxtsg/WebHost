@@ -6,8 +6,7 @@ A simple static web server, powered by Node.js and Express.
 
 ## Requirements ##
 
-* Node.js (`>=4.4.5`).
-* express (`>=4.15.2`).
+* Node.js (`>=6.10.1`).
 
 ## Installation ##
 
