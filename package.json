@@ -4,7 +4,7 @@
   "description": "A simple static web server, powered by Express and Node.js.",
   "main": "index.js",
   "dependencies": {
-    "express": "^4.16.1"
+    "express": "^4.16.2"
   },
   "repository": {
     "type": "git",
