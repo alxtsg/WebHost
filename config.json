@@ -2,6 +2,7 @@
   "rootDirectory": "web",
   "errorPage": "web/404.html",
   "isBehindReverseProxy": false,
+  "accessLog": "logs/access.log",
   "tls": {
     "cert": "certificates/server.crt",
     "key": "certificates/server.key",

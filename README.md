@@ -19,6 +19,7 @@ The configuration file `config.json` controls the following:
 * `rootDirectory`: Root directory of the static files. Default is `web`.
 * `errorPage`: Path of the HTML file to be sent when requested file cannot be found (i.e. [HTTP 404](http://en.wikipedia.org/wiki/HTTP_404)). Default is `web/404.html`.
 * `isBehindReverseProxy`: Boolean value indicates whether WebHost is placed behind a reverse proxy. Default is `false`.
+* `accessLog`: Path of access log. Default is `logs/access.log`.
 * `tls`: TLS options for HTTPS.
     * `cert`: Path of server certificate file. Default is `certificates/server.crt`.
     * `key`: Path of server private key. Default is `certificates/server.key`.

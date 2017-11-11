@@ -14,6 +14,11 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
+const Logger = require(path.join(
+  __dirname,
+  'logger.js'
+));
+
 const ERROR_READ_CONFIG_FILE = 'Cannot read configuration file.';
 const ERROR_PARSE_CONFIG_FILE = 'Cannot parse configuration file.';
 const ERROR_READ_TLS_CERTIFICATE = 'Cannot read TLS certificate.';
@@ -28,6 +33,7 @@ const serverConfig = {
   rootDirectory: null,
   errorPage: null,
   isBehindReverseProxy: null,
+  accessLog: null,
   tls: {
     cert: null,
     key: null,
@@ -38,6 +44,8 @@ const serverConfig = {
   }
 };
 const expressApp = express();
+
+let accessLogger = null;
 
 function readConfig() {
   return new Promise((resolve, reject) => {
@@ -57,6 +65,7 @@ function readConfig() {
           serverConfig.rootDirectory = config.rootDirectory;
           serverConfig.errorPage = config.errorPage;
           serverConfig.isBehindReverseProxy = config.isBehindReverseProxy;
+          serverConfig.accessLog = config.accessLog;
           serverConfig.tls.ciphers = config.tls.ciphers,
           serverConfig.tls.ecdhCurve = config.tls.ecdhCurve,
           serverConfig.tls.secureProtocol = config.tls.secureProtocol,
@@ -98,6 +107,7 @@ function start() {
       expressApp.set('trust proxy', true);
     }
     // Log request.
+    accessLogger = new Logger(serverConfig.accessLog);
     expressApp.use((request, response, next) => {
       const logEntry = {
         timestamp: (new Date()).toISOString(),
@@ -105,7 +115,7 @@ function start() {
         method: request.method,
         url: request.originalUrl
       };
-      console.log(JSON.stringify(logEntry));
+      accessLogger.log(JSON.stringify(logEntry));
       next();
     });
     // Serve static files by express-static.
