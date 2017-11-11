@@ -1,6 +1,6 @@
 {
   "name": "webhost",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "A simple static web server, powered by Express and Node.js.",
   "main": "index.js",
   "dependencies": {

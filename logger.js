@@ -6,6 +6,8 @@
  * @license BSD-3-Clause
  */
 
+'use strict';
+
 const fs = require('fs');
 
 class Logger {
