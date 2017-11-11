@@ -69,10 +69,10 @@ function readConfig() {
           serverConfig.errorPage = config.errorPage;
           serverConfig.isBehindReverseProxy = config.isBehindReverseProxy;
           serverConfig.accessLog = config.accessLog;
-          serverConfig.tls.ciphers = config.tls.ciphers,
-          serverConfig.tls.ecdhCurve = config.tls.ecdhCurve,
-          serverConfig.tls.secureProtocol = config.tls.secureProtocol,
-          serverConfig.tls.port = config.tls.port
+          serverConfig.tls.ciphers = config.tls.ciphers;
+          serverConfig.tls.ecdhCurve = config.tls.ecdhCurve;
+          serverConfig.tls.secureProtocol = config.tls.secureProtocol;
+          serverConfig.tls.port = config.tls.port;
           fs.readFile(config.tls.cert, (readCertError, cert) => {
             if (readCertError !== null) {
               reject(new Error(ERROR_READ_TLS_CERTIFICATE));
