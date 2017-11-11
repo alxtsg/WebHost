@@ -1,6 +1,7 @@
 {
   "rootDirectory": "web",
   "errorPage": "web/404.html",
+  "isBehindReverseProxy": false,
   "tls": {
     "cert": "certificates/server.crt",
     "key": "certificates/server.key",

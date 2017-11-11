@@ -27,6 +27,7 @@ const CONFIG_FILE_PATH = path.join(
 const serverConfig = {
   rootDirectory: null,
   errorPage: null,
+  isBehindReverseProxy: null,
   tls: {
     cert: null,
     key: null,
@@ -55,6 +56,7 @@ function readConfig() {
           config = JSON.parse(data);
           serverConfig.rootDirectory = config.rootDirectory;
           serverConfig.errorPage = config.errorPage;
+          serverConfig.isBehindReverseProxy = config.isBehindReverseProxy;
           serverConfig.tls.ciphers = config.tls.ciphers,
           serverConfig.tls.ecdhCurve = config.tls.ecdhCurve,
           serverConfig.tls.secureProtocol = config.tls.secureProtocol,
@@ -90,6 +92,22 @@ function start() {
     // Disable several response headers.
     expressApp.disable('etag');
     expressApp.disable('x-powered-by');
+    // If WebHost is placed behind a reverse proxy, get client IP address from
+    // the X-Forwarded-* header.
+    if (serverConfig.isBehindReverseProxy) {
+      expressApp.set('trust proxy', true);
+    }
+    // Log request.
+    expressApp.use((request, response, next) => {
+      const logEntry = {
+        timestamp: (new Date()).toISOString(),
+        ip: request.ip,
+        method: request.method,
+        url: request.originalUrl
+      };
+      console.log(JSON.stringify(logEntry));
+      next();
+    });
     // Serve static files by express-static.
     expressApp.use(express.static(
       serverConfig.rootDirectory,

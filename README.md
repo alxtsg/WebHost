@@ -2,7 +2,7 @@
 
 ## Description ##
 
-A simple static web server, powered by Node.js and Express.
+A simple static web server, powered by Node.js and Express. WebHost is developed to be used as the skeleton of more complex web applications.
 
 ## Requirements ##
 
@@ -18,6 +18,7 @@ The configuration file `config.json` controls the following:
 
 * `rootDirectory`: Root directory of the static files. Default is `web`.
 * `errorPage`: Path of the HTML file to be sent when requested file cannot be found (i.e. [HTTP 404](http://en.wikipedia.org/wiki/HTTP_404)). Default is `web/404.html`.
+* `isBehindReverseProxy`: Boolean value indicates whether WebHost is placed behind a reverse proxy. Default is `false`.
 * `tls`: TLS options for HTTPS.
     * `cert`: Path of server certificate file. Default is `certificates/server.crt`.
     * `key`: Path of server private key. Default is `certificates/server.key`.
@@ -42,9 +43,9 @@ Then generate the certificate file:
 
 Note that the self-signed certificate generated above will expire in 365 days.
 
-(Free, trusted certificates can be obtained from [Let's Encrypt](https://letsencrypt.org/).)
-
 Put the generated private key and certificate file under the `certificates` directory.
+
+Free, trusted certificates can be obtained from [Let's Encrypt](https://letsencrypt.org/).
 
 ## License ##
 
