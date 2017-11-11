@@ -47,6 +47,9 @@ const expressApp = express();
 
 let accessLogger = null;
 
+/**
+ * Reads configuration file.
+ */
 function readConfig() {
   return new Promise((resolve, reject) => {
     fs.readFile(
