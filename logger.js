@@ -25,9 +25,15 @@ class Logger {
    * Logs a message.
    *
    * @param {String} message Log message.
+   * @param {Boolean} hasTimestamp Prepend log message with a timestamp or not.
    */
-  log(message) {
-    const line = `${(new Date()).toISOString()} ${message}\n`;
+  log(message, hasTimestamp = true) {
+    let line = null;
+    if (hasTimestamp) {
+      line = `${(new Date()).toISOString()} ${message}\n`;
+    } else {
+      line = `${message}\n`;
+    }
     fs.appendFile(this.filename, line, (error) => {
       if (error !== null) {
         throw error;
