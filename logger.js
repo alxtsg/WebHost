@@ -27,7 +27,7 @@ class Logger {
    * @param {String} message Log message.
    */
   log(message) {
-    const line = `${message}\n`;
+    const line = `${(new Date()).toISOString()} ${message}\n`;
     fs.appendFile(this.filename, line, (error) => {
       if (error !== null) {
         throw error;
