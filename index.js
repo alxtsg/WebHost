@@ -11,7 +11,6 @@
 const express = require('express');
 
 const fs = require('fs');
-const http = require('http');
 const path = require('path');
 
 const Logger = require(path.join(
@@ -21,8 +20,6 @@ const Logger = require(path.join(
 
 const ERROR_READ_CONFIG_FILE = 'Cannot read configuration file.';
 const ERROR_PARSE_CONFIG_FILE = 'Cannot parse configuration file.';
-const ERROR_READ_TLS_CERTIFICATE = 'Cannot read TLS certificate.';
-const ERROR_READ_TLS_PRIVATE_KEY = 'Cannot read TLS private key.';
 
 const CONFIG_FILE_PATH = path.join(
   __dirname,
