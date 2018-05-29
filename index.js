@@ -11,7 +11,7 @@
 const express = require('express');
 
 const fs = require('fs');
-const https = require('https');
+const http = require('http');
 const path = require('path');
 
 const Logger = require(path.join(
@@ -32,16 +32,8 @@ const CONFIG_FILE_PATH = path.join(
 const serverConfig = {
   rootDirectory: null,
   errorPage: null,
-  isBehindReverseProxy: null,
   accessLog: null,
-  tls: {
-    cert: null,
-    key: null,
-    ciphers: null,
-    ecdhCurve: null,
-    secureProtocol: null,
-    port: null
-  }
+  port: null
 };
 const expressApp = express();
 
@@ -67,27 +59,9 @@ function readConfig() {
           config = JSON.parse(data);
           serverConfig.rootDirectory = config.rootDirectory;
           serverConfig.errorPage = config.errorPage;
-          serverConfig.isBehindReverseProxy = config.isBehindReverseProxy;
           serverConfig.accessLog = config.accessLog;
-          serverConfig.tls.ciphers = config.tls.ciphers;
-          serverConfig.tls.ecdhCurve = config.tls.ecdhCurve;
-          serverConfig.tls.secureProtocol = config.tls.secureProtocol;
-          serverConfig.tls.port = config.tls.port;
-          fs.readFile(config.tls.cert, (readCertError, cert) => {
-            if (readCertError !== null) {
-              reject(new Error(ERROR_READ_TLS_CERTIFICATE));
-              return;
-            }
-            serverConfig.tls.cert = cert;
-            fs.readFile(config.tls.key, (readKeyError, key) => {
-              if (readKeyError !== null) {
-                reject(new Error(ERROR_READ_TLS_PRIVATE_KEY));
-                return;
-              }
-              serverConfig.tls.key = key;
-              resolve();
-            });
-          });
+          serverConfig.port = config.port;
+          resolve();
         } catch (parseError) {
           reject(new Error(ERROR_PARSE_CONFIG_FILE));
         }
@@ -104,12 +78,9 @@ function start() {
     // Disable several response headers.
     expressApp.disable('etag');
     expressApp.disable('x-powered-by');
-    // If WebHost is placed behind a reverse proxy, get client IP address from
-    // the X-Forwarded-* header.
-    if (serverConfig.isBehindReverseProxy) {
-      expressApp.set('trust proxy', true);
-    }
-    // Log request.
+    // WebHost is expected to run behind a reverse proxy.
+    expressApp.set('trust proxy', true);
+    // Log incoming requests.
     accessLogger = new Logger(serverConfig.accessLog);
     expressApp.use((request, response, next) => {
       const logEntry = {
@@ -118,7 +89,7 @@ function start() {
         method: request.method,
         url: request.originalUrl
       };
-      accessLogger.log(JSON.stringify(logEntry));
+      accessLogger.log(JSON.stringify(logEntry), false);
       next();
     });
     // Serve static files by express-static.
@@ -147,19 +118,10 @@ function start() {
       });
       readStream.pipe(response);
     });
-    // Create HTTPS server.
+    // Create HTTP server.
     try {
-      https.createServer(
-        {
-          cert: serverConfig.tls.cert,
-          key: serverConfig.tls.key,
-          ciphers: serverConfig.tls.ciphers,
-          ecdhCurve: serverConfig.tls.ecdhCurve,
-          secureProtocol: serverConfig.tls.secureProtocol
-        },
-        expressApp
-      ).listen(serverConfig.tls.port);
-      console.log('Started HTTPS server.');
+      expressApp.listen(serverConfig.port);
+      console.log(`${(new Date()).toISOString()} Started HTTP server.`);
       resolve();
     } catch (error) {
       reject(error);
@@ -170,5 +132,5 @@ function start() {
 readConfig()
   .then(start)
   .catch((error) => {
-    console.error(error.message);
+    console.error(`${(new Date()).toISOString()} ${error.message}`);
   });
