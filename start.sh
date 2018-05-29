@@ -13,5 +13,5 @@ SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
 cd "${SCRIPT_DIR}"
 
 export NODE_ENV='production'
-date -u '+%Y-%m-%dT%H:%M:%SZ' >> nohup.out
+date -u '+%Y-%m-%dT%H:%M:%SZ Starting WebHost.' >> nohup.out
 nohup node "${SCRIPT_DIR}"/index.js &
