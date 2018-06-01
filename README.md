@@ -27,9 +27,23 @@ To start WebHost:
 
     node index.js
 
-On OpenBSD, the script `start.sh` can be used to start WebHost in background:
+On OpenBSD, the script `control.sh` can be used to control WebHost.
 
-    sh start.sh
+Start WebHost:
+
+    sh control.sh start
+
+Stop WebHost:
+
+    sh control.sh stop
+
+Restart WebHost:
+
+    sh control.sh restart
+
+Query WebHost running status:
+
+    sh control.sh status
 
 ## License ##
 
