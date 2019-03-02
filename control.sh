@@ -23,7 +23,7 @@ getPid() {
 
 startApp() {
   result="$(getPid)"
-  if [ ! -z "${result}" ]; then
+  if [ -n "${result}" ]; then
     echo "WebHost is already running (PID: ${result})."
     exit 1
   fi
@@ -34,7 +34,7 @@ startApp() {
 
 stopApp() {
   result="$(getPid)"
-  if [ ! -z "${result}" ]; then
+  if [ -n "${result}" ]; then
     date -u '+%Y-%m-%dT%H:%M:%SZ Stopping WebHost.' >> nohup.out
     kill "${result}"
   fi
@@ -47,7 +47,7 @@ restartApp() {
 
 status() {
   result="$(getPid)"
-  if [ ! -z "${result}" ]; then
+  if [ -n "${result}" ]; then
     echo "Active, PID is ${result}."
   else
     echo "Inactive."
