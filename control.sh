@@ -18,7 +18,7 @@ usage() {
 }
 
 getPid() {
-  pgrep -f "node ${baseDirectory}/index.js"
+  pgrep -f "^node ${baseDirectory}/index.js$"
 }
 
 startApp() {

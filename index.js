@@ -8,57 +8,68 @@
 
 'use strict';
 
-const express = require('express');
-
+const cluster = require('cluster');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
-const Logger = require(path.join(
+const MessageType = require(path.join(
   __dirname,
-  'logger.js'
+  'message-type.js'
+));
+const worker = require(path.join(
+  __dirname,
+  'worker.js'
 ));
 
+/**
+ * Error messages.
+ */
 const ERROR_READ_CONFIG_FILE = 'Cannot read configuration file.';
 const ERROR_PARSE_CONFIG_FILE = 'Cannot parse configuration file.';
 
+/**
+ * Configuration file path.
+ */
 const CONFIG_FILE_PATH = path.join(
   __dirname,
   'config.json'
 );
 
-const serverConfig = {
-  rootDirectory: null,
-  errorPage: null,
-  accessLog: null,
-  port: null
-};
-const expressApp = express();
-
-let accessLogger = null;
+/**
+ * Handles the message sent from the worker.
+ *
+ * @param {Object} message Message object sent from the worker.
+ */
+function handleWorkerMessage(message) {
+  // TODO: Decide what to do with the message.
+}
 
 /**
  * Reads configuration file.
+ *
+ * @async
+ *
+ * @param {String} path Configuration file path.
+ *
+ * @returns {Promise} Promise will resolve with the configuration, or reject
+ *                    with error.
  */
-function readConfig() {
+async function readConfig(path) {
   return new Promise((resolve, reject) => {
     fs.readFile(
-      CONFIG_FILE_PATH,
+      path,
       {
         encoding: 'utf8'
       },
       (readError, data) => {
-        let config = null;
         if (readError !== null) {
           reject(new Error(ERROR_READ_CONFIG_FILE));
           return;
         }
         try {
-          config = JSON.parse(data);
-          serverConfig.rootDirectory = config.rootDirectory;
-          serverConfig.errorPage = config.errorPage;
-          serverConfig.accessLog = config.accessLog;
-          serverConfig.port = config.port;
-          resolve();
+          const config = JSON.parse(data);
+          resolve(config);
         } catch (parseError) {
           reject(new Error(ERROR_PARSE_CONFIG_FILE));
         }
@@ -68,66 +79,45 @@ function readConfig() {
 }
 
 /**
- * Starts server.
+ * Initializes master.
  */
-function start() {
-  return new Promise((resolve, reject) => {
-    // Disable several response headers.
-    expressApp.disable('etag');
-    expressApp.disable('x-powered-by');
-    // WebHost is expected to run behind a reverse proxy.
-    expressApp.set('trust proxy', true);
-    // Log incoming requests.
-    accessLogger = new Logger(serverConfig.accessLog);
-    expressApp.use((request, response, next) => {
-      const logEntry = {
-        timestamp: (new Date()).toISOString(),
-        ip: request.ip,
-        method: request.method,
-        url: request.originalUrl
-      };
-      accessLogger.log(JSON.stringify(logEntry), false);
-      next();
-    });
-    // Serve static files by express-static.
-    expressApp.use(express.static(
-      serverConfig.rootDirectory,
-      {
-        etag: false
-      }
-    ));
-    // File not found.
-    expressApp.use((request, response) => {
-      let readStream = null;
-      response.statusCode = 404;
-      response.type('text/html');
-      readStream = fs.createReadStream(
-        serverConfig.errorPage,
-        {
-          encoding: 'utf8'
-        }
-      );
-      // Cannot read error page.
-      readStream.on('error', () => {
-        response.statusCode = 500;
-        response.type('text/plain');
-        response.end('Internal server error.');
+async function init() {
+  let config = null;
+  try {
+    config = await readConfig(CONFIG_FILE_PATH);
+  } catch (readConfigError) {
+    console.error(
+      `Unable to read configuration file: ${readConfigError.message}`);
+    return;
+  }
+  const workerCount = os.cpus().length;
+  console.log(`${workerCount} workers will be started.`);
+  for (let i = 0; i < workerCount; i++) {
+      const worker = cluster.fork();
+      worker.send({
+        type: MessageType.START_SERVER,
+        config: config
       });
-      readStream.pipe(response);
-    });
-    // Create HTTP server.
-    try {
-      expressApp.listen(serverConfig.port);
-      console.log(`${(new Date()).toISOString()} Started HTTP server.`);
-      resolve();
-    } catch (error) {
-      reject(error);
-    }
+  }
+  cluster.on('message', (worker, message) => {
+      handleWorkerMessage(message);
+  });
+  cluster.on('exit', (worker, code, signal) => {
+      if (signal !== undefined) {
+          console.log(`Worker #${worker.id} killed by signal ${signal}.`);
+          return;
+      }
+      if (code !== 0) {
+          console.error(`Worker #${worker.id} exit with code ${code}.`);
+          return;
+      }
+      console.log(`Worker #${worker.id} exit successfully.`);
   });
 }
 
-readConfig()
-  .then(start)
-  .catch((error) => {
-    console.error(`${(new Date()).toISOString()} ${error.message}`);
-  });
+if (cluster.isMaster) {
+  init();
+  return;
+}
+
+worker.init();
