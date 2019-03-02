@@ -1,10 +1,10 @@
 {
   "name": "webhost",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "A simple static web server, powered by Express and Node.js.",
   "main": "index.js",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.4"
   },
   "repository": {
     "type": "git",
