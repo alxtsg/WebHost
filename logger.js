@@ -26,6 +26,8 @@ class Logger {
    *
    * @param {string} message Log message.
    * @param {boolean} hasTimestamp Prepend log message with a timestamp or not.
+   *
+   * @throws {Error} When unable to log the message.
    */
   log(message, hasTimestamp = true) {
     let line = null;
