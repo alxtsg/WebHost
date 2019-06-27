@@ -98,11 +98,11 @@ const startServer = (config) => {
  * Initializes worker.
  */
 const init = () => {
-    process.on('message', (message) => {
-        handleMasterMessage(message);
-    });
+  process.on('message', (message) => {
+    handleMasterMessage(message);
+  });
 };
 
 module.exports = {
-    init: init
+  init
 };
