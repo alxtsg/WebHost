@@ -2,8 +2,8 @@
 
 ## Description ##
 
-A simple static web server, powered by Node.js and Express. WebHost is developed
-to be used as the skeleton of more complex web applications.
+A simple static web server, powered by Node.js and Express. WebHost is being
+used as the skeleton of more complex web applications.
 
 WebHost is expected to run behind a reverse proxy (e.g. HAProxy).
 
@@ -15,18 +15,23 @@ WebHost is expected to run behind a reverse proxy (e.g. HAProxy).
 
 0. `npm install --production`.
 
+## Configuration ##
+
+Make a copy of `.env.template` and name the new file as `.env`. The `.env` file
+controls the following:
+
+* `ROOT_DIRECTORY`: The root directory of files to be served by the web server.
+                    If the path is a relative path, it is relative to the
+                    installation directory.
+* `ERROR_PAGE`: Path of error page. If the path is a relative path, it is
+                relative to the installation directory.
+* `ACCESS_LOG`: Path of access log. If the path is a relative path, it is
+                relative to the installation directory.
+* `PORT`: The port that the server will listen on.
+
 ## Usage ##
 
-The configuration file `config.json` controls the following:
-
-* `rootDirectory`: Root directory of the static files. Default is `web`.
-* `errorPage`: Path of the HTML file to be sent when requested file cannot be
-  found (i.e. [HTTP 404](http://en.wikipedia.org/wiki/HTTP_404)). Default is
-  `web/404.html`.
-* `accessLog`: Path of access log. Default is `logs/access.log`.
-* `port`: HTTP server listening port. Default is `8080`.
-
-To start WebHost:
+Run `index.js` using Node.js:
 
 ```
 node index.js
