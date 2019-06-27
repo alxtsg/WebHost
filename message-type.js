@@ -1,7 +1,7 @@
 /**
  * Message type of message sent between master and worker.
  *
- * @author Alex Tsang <alextsang@live.com>
+ * @author Alex TSANG <alextsang@live.com>
  *
  * @license BSD-3-Clause
  */
