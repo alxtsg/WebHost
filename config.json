@@ -1,6 +1,0 @@
-{
-  "rootDirectory": "web",
-  "errorPage": "web/404.html",
-  "accessLog": "logs/access.log",
-  "port": 8080
-}

@@ -4,6 +4,7 @@
   "description": "A simple static web server, powered by Express and Node.js.",
   "main": "index.js",
   "dependencies": {
+    "dotenv": "^8.0.0",
     "express": "^4.17.1"
   },
   "repository": {
