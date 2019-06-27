@@ -26,40 +26,40 @@ const worker = require(path.join(
 /**
  * Handles the message sent from the worker.
  *
- * @param {Object} message Message object sent from the worker.
+ * @param {object} message Message object sent from the worker.
  */
-function handleWorkerMessage(message) {
+const handleWorkerMessage = (message) => {
   // TODO: Decide what to do with the message.
-}
+};
 
 /**
  * Initializes master.
  */
-async function init() {
+const init = () => {
   const workerCount = os.cpus().length;
   console.log(`${workerCount} workers will be started.`);
   for (let i = 0; i < workerCount; i++) {
-      const worker = cluster.fork();
-      worker.send({
-        type: MessageType.START_SERVER,
-        config
-      });
+    const worker = cluster.fork();
+    worker.send({
+      type: MessageType.START_SERVER,
+      config
+    });
   }
   cluster.on('message', (worker, message) => {
-      handleWorkerMessage(message);
+    handleWorkerMessage(message);
   });
   cluster.on('exit', (worker, code, signal) => {
-      if (signal !== undefined) {
-          console.log(`Worker #${worker.id} killed by signal ${signal}.`);
-          return;
-      }
-      if (code !== 0) {
-          console.error(`Worker #${worker.id} exit with code ${code}.`);
-          return;
-      }
-      console.log(`Worker #${worker.id} exit successfully.`);
+    if (signal !== undefined) {
+      console.log(`Worker #${worker.id} killed by signal ${signal}.`);
+      return;
+    }
+    if (code !== 0) {
+      console.error(`Worker #${worker.id} exit with code ${code}.`);
+      return;
+    }
+    console.log(`Worker #${worker.id} exit successfully.`);
   });
-}
+};
 
 if (cluster.isMaster) {
   init();

@@ -25,22 +25,22 @@ const MessageType = require(path.join(
 /**
  * Handles the message sent from the master.
  *
- * @param {Object} message Message object sent from the master.
+ * @param {object} message Message object sent from the master.
  */
-function handleMasterMessage(message) {
+const handleMasterMessage = (message) => {
   switch (message.type) {
-      case MessageType.START_SERVER:
-        startServer(message.config);
-        break;
-      default:
-        console.error(`Unrecognized message type: ${message.type}`);
+    case MessageType.START_SERVER:
+      startServer(message.config);
+      break;
+    default:
+      console.error(`Unrecognized message type: ${message.type}`);
   }
-}
+};
 
 /**
  * Starts server.
  */
-function startServer(config) {
+const startServer = (config) => {
   const expressApp = new express();
   // Disable several response headers.
   expressApp.disable('etag');
@@ -51,10 +51,10 @@ function startServer(config) {
   const accessLogger = new Logger(config.accessLog);
   expressApp.use((request, response, next) => {
     const logEntry = {
-        timestamp: (new Date()).toISOString(),
-        ip: request.ip,
-        method: request.method,
-        url: request.originalUrl
+      timestamp: (new Date()).toISOString(),
+      ip: request.ip,
+      method: request.method,
+      url: request.originalUrl
     };
     accessLogger.log(JSON.stringify(logEntry), false);
     next();
@@ -92,16 +92,16 @@ function startServer(config) {
   } catch (error) {
     console.error(`Unable to start HTTP server: ${error.message}`);
   }
-}
+};
 
 /**
  * Initializes worker.
  */
-function init() {
+const init = () => {
     process.on('message', (message) => {
         handleMasterMessage(message);
     });
-}
+};
 
 module.exports = {
     init: init

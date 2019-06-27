@@ -15,7 +15,7 @@ class Logger {
   /**
    * Constructor.
    *
-   * @param {String} filename Filename of log.
+   * @param {string} filename Filename of log.
    */
   constructor(filename) {
     this.filename = filename;
@@ -24,8 +24,8 @@ class Logger {
   /**
    * Logs a message.
    *
-   * @param {String} message Log message.
-   * @param {Boolean} hasTimestamp Prepend log message with a timestamp or not.
+   * @param {string} message Log message.
+   * @param {boolean} hasTimestamp Prepend log message with a timestamp or not.
    */
   log(message, hasTimestamp = true) {
     let line = null;
