@@ -8,19 +8,11 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-
 const express = require('express');
 
-const Logger = require(path.join(
-  __dirname,
-  'logger.js'
-));
-const MessageType = require(path.join(
-  __dirname,
-  'message-type.js'
-));
+const accessLogger = require('./middlewares/access-logger.js');
+const http404Handler = require('./middlewares/http-404-handler.js');
+const MessageType = require('./message-type.js');
 
 /**
  * Handles the message sent from the master.
@@ -48,17 +40,7 @@ const startServer = (config) => {
   // WebHost is expected to run behind a reverse proxy.
   expressApp.set('trust proxy', true);
   // Log incoming requests.
-  const accessLogger = new Logger(config.accessLog);
-  expressApp.use((request, response, next) => {
-    const logEntry = {
-      timestamp: (new Date()).toISOString(),
-      ip: request.ip,
-      method: request.method,
-      url: request.originalUrl
-    };
-    accessLogger.log(JSON.stringify(logEntry), false);
-    next();
-  });
+  expressApp.use(accessLogger.getMiddleware());
   // Serve static files by express-static.
   expressApp.use(express.static(
     config.rootDirectory,
@@ -66,25 +48,8 @@ const startServer = (config) => {
       etag: false
     }
   ));
-  // File not found.
-  expressApp.use((request, response) => {
-    let readStream = null;
-    response.statusCode = 404;
-    response.type('text/html');
-    readStream = fs.createReadStream(
-      config.errorPage,
-      {
-        encoding: 'utf8'
-      }
-    );
-    // Cannot read error page.
-    readStream.on('error', () => {
-      response.statusCode = 500;
-      response.type('text/plain');
-      response.end('Internal server error.');
-    });
-    readStream.pipe(response);
-  });
+  // HTTP 404 handler.
+  expressApp.use(http404Handler.getMiddleware());
   // Create HTTP server.
   try {
     expressApp.listen(config.port);

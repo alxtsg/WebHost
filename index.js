@@ -10,18 +10,10 @@
 
 const cluster = require('cluster');
 const os = require('os');
-const path = require('path');
 
 const config = require('./config.js');
-
-const MessageType = require(path.join(
-  __dirname,
-  'message-type.js'
-));
-const worker = require(path.join(
-  __dirname,
-  'worker.js'
-));
+const MessageType = require('./message-type.js');
+const worker = require('./worker.js');
 
 /**
  * Handles the message sent from the worker.
