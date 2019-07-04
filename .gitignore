@@ -1,1 +1,5 @@
+# Node.js modules.
 node_modules/
+
+# Application configurations for local environment.
+.env
