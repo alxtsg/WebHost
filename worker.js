@@ -11,7 +11,7 @@
 const express = require('express');
 
 const accessLogger = require('./middlewares/access-logger.js');
-const http404Handler = require('./middlewares/http-404-handler.js');
+const notFoundHandler = require('./middlewares/not-found.js');
 const MessageType = require('./message-type.js');
 
 /**
@@ -40,7 +40,7 @@ const startServer = (config) => {
   // WebHost is expected to run behind a reverse proxy.
   expressApp.set('trust proxy', true);
   // Log incoming requests.
-  expressApp.use(accessLogger.getMiddleware());
+  expressApp.use(accessLogger());
   // Serve static files by express-static.
   expressApp.use(express.static(
     config.rootDirectory,
@@ -49,7 +49,7 @@ const startServer = (config) => {
     }
   ));
   // HTTP 404 handler.
-  expressApp.use(http404Handler.getMiddleware());
+  expressApp.use(notFoundHandler());
   // Create HTTP server.
   try {
     expressApp.listen(config.port);

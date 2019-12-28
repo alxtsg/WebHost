@@ -36,6 +36,4 @@ const getMiddleware = () => (request, response, next) => {
   );
 };
 
-module.exports = {
-  getMiddleware
-};
+module.exports = getMiddleware;

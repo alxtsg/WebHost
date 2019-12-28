@@ -34,6 +34,4 @@ const getMiddleware = () => (request, response) => {
   readStream.pipe(response);
 };
 
-module.exports = {
-  getMiddleware
-};
+module.exports = getMiddleware;
