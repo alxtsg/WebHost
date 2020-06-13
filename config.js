@@ -11,18 +11,21 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 /**
- * Path of .env file.
+ * .env file path.
  */
-const envFile = path.join(
-  __dirname,
-  '.env'
-);
+const envFile = path.join(__dirname, '.env');
+
+/**
+ * PID file path.
+ */
+const pidFile = path.join(__dirname, 'webhost.pid');
 
 const config = {
   rootDirectory: null,
   errorPage: null,
   accessLog: null,
-  port: null
+  port: null,
+  pidFile
 };
 
 const radix = 10;

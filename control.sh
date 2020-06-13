@@ -5,10 +5,11 @@
 # License: BSD-3-Clause
 
 set -u
-IFS='\n\t'
+IFS="$(printf '\n\t')"
 
 baseDirectory="$(cd "$(dirname "${0}")"; pwd)"
 webhostScript="${0}"
+pidFile="${baseDirectory}/webhost.pid"
 action="${1:-usage}"
 
 cd "${baseDirectory}"
@@ -18,7 +19,16 @@ usage() {
 }
 
 getPid() {
-  pgrep -f "^node ${baseDirectory}/index.js$"
+  if [ ! -r "${pidFile}" ]; then
+    echo ""
+    return
+  fi
+  content=$(cat "${pidFile}")
+  if [ -n "$(ps -p "${content}" -o pid=)" ]; then
+    echo "${content}"
+  else
+    echo ""
+  fi
 }
 
 startApp() {

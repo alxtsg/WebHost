@@ -9,11 +9,14 @@
 'use strict';
 
 const cluster = require('cluster');
+const fs = require('fs');
 const os = require('os');
 
 const config = require('./config.js');
 const MessageType = require('./message-type.js');
 const worker = require('./worker.js');
+
+const fsPromises = fs.promises;
 
 /**
  * Handles the message sent from the worker.
@@ -27,7 +30,7 @@ const handleWorkerMessage = (message) => {
 /**
  * Initializes master.
  */
-const init = () => {
+const initMaster = async () => {
   const workerCount = os.cpus().length;
   console.log(`${workerCount} workers will be started.`);
   for (let i = 0; i < workerCount; i++) {
@@ -37,6 +40,7 @@ const init = () => {
       config
     });
   }
+  await fsPromises.writeFile(config.pidFile, `${process.pid}`);
   cluster.on('message', (worker, message) => {
     handleWorkerMessage(message);
   });
@@ -53,9 +57,12 @@ const init = () => {
   });
 };
 
-if (cluster.isMaster) {
-  init();
-  return;
-}
+const main = async () => {
+  if (cluster.isMaster) {
+    await initMaster();
+    return;
+  }
+  worker.init();
+};
 
-worker.init();
+main();
