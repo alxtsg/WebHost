@@ -5,7 +5,7 @@ import config from '../config';
 
 const ROOT_DIRECTORY: string = 'web';
 const PORT: number = 8080;
-const ERROR_PAGE: string = path.join('web', '404.html');
+const ERROR_PAGE: string = '404.html';
 const ACCESS_LOG: string = path.join('logs', 'access.log');
 
 describe('Configurations module', async (): Promise<void> => {

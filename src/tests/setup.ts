@@ -5,7 +5,7 @@ const ENV_FILE: string = path.join(__dirname, '..', '.env');
 const ENV_CONTENT: string = [
   'ROOT_DIRECTORY=web',
   'PORT=8080',
-  `ERROR_PAGE=${path.join('web', '404.html')}`,
+  `ERROR_PAGE=404.html`,
   `ACCESS_LOG=${path.join('logs', 'access.log')}`,
 ].join('\n');
 const LOG_DIR: string = path.join(__dirname, '..', 'logs');
