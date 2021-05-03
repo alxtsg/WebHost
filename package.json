@@ -15,8 +15,9 @@
     "copy-env": "copyfiles -u 1 src/.env.template dist",
     "copy-package-json": "copyfiles package*.json dist",
     "copy-test-web": "copyfiles -u 1 src/web/* dist",
+    "copy-control-script": "copyfiles -u 1 src/control.sh dist",
     "build-test": "tsc && npm run copy-env && npm run copy-package-json && npm run copy-test-web",
-    "build-release": "tsc && npm run copy-env && npm run copy-package-json",
+    "build-release": "tsc && npm run copy-env && npm run copy-package-json && npm run copy-control-script",
     "pretest": "node tests/setup.js",
     "test": "mocha --require tests/fixtures.js --recursive \"tests/**/*.test.js\""
   },

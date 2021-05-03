@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Script for controlling WebHost. Tested on OpenBSD 6.5 only.
+# Script for controlling WebHost.
 # Author: Alex TSANG <alextsang@live.com>
 # License: BSD-3-Clause
 
