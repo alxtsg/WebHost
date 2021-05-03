@@ -14,7 +14,7 @@ const fsPromises = fs.promises;
 
 const main = async (): Promise<void> => {
   await fsPromises.writeFile(ENV_FILE, ENV_CONTENT)
-  await fsPromises.mkdir(LOG_DIR);
+  await fsPromises.mkdir(LOG_DIR, { recursive: true });
 };
 
 main();
