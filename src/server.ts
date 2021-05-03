@@ -1,5 +1,8 @@
 import fastify from 'fastify';
 
+import fs from 'fs';
+import path from 'path';
+
 import config from './config';
 
 import requestLogger from './hooks/access-logger'
@@ -10,6 +13,9 @@ import webPlugin from './plugins/web'
 import type { FastifyInstance } from 'fastify';
 
 const ERROR_EXIT_CODE: number = 1;
+const PID_FILE: string = path.join(__dirname, 'webhost.pid');
+
+const fsPromises = fs.promises;
 
 const server: FastifyInstance = fastify();
 
@@ -18,13 +24,22 @@ server.register(webPlugin);
 
 server.addHook('onRequest', requestLogger);
 
-server.listen(config.port, (error: Error): void => {
-  if (error !== null) {
-    console.error('Unable to start server.');
+const writePidFile = async () => {
+  const content: string = `${process.pid}`;
+  await fsPromises.writeFile(PID_FILE, content);
+};
+
+const start = async () => {
+  try {
+    await server.listen(config.port);
+    await writePidFile();
+  } catch (error) {
+    console.error('Error occurred when starting server.');
     console.error(error);
     process.exit(ERROR_EXIT_CODE);
   }
-  server.log.info(`Started server, listening on port ${config.port}.`);
-});
+};
+
+start();
 
 export default server;
