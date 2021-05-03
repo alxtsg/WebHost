@@ -8,11 +8,13 @@ const ENV_CONTENT: string = [
   `ERROR_PAGE=${path.join('web', '404.html')}`,
   `ACCESS_LOG=${path.join('logs', 'access.log')}`,
 ].join('\n');
+const LOG_DIR: string = path.join(__dirname, '..', 'logs');
 
 const fsPromises = fs.promises;
 
 const main = async (): Promise<void> => {
   await fsPromises.writeFile(ENV_FILE, ENV_CONTENT)
+  await fsPromises.mkdir(LOG_DIR);
 };
 
 main();
