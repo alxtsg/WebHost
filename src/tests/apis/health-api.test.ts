@@ -11,8 +11,6 @@ describe('Health API', async () => {
     await assert.doesNotReject(async () => {
       const response = await fetch(BASE_URL);
       assert.strictEqual(response.ok, true);
-      const responseJSON = await response.json();
-      assert.strictEqual(responseJSON.hasOwnProperty('status'), true);
     });
   });
 });
