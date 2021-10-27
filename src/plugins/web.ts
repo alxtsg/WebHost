@@ -1,10 +1,14 @@
 import fastifyStatic from 'fastify-static';
 
 import path from 'path';
+import url from 'url';
 
-import config from '../config';
+import config from '../config.js';
 
 import type { FastifyPluginCallback } from 'fastify';
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const WEB_ROOT: string = path.join(__dirname, '..', config.rootDirectory);
 

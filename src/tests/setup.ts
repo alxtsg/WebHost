@@ -1,5 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import url from 'url';
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const ENV_FILE: string = path.join(__dirname, '..', '.env');
 const ENV_CONTENT: string = [

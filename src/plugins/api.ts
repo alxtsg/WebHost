@@ -1,4 +1,4 @@
-import healthAPI from '../apis/health-api';
+import healthAPI from '../apis/health-api.js';
 
 import type { FastifyPluginCallback } from 'fastify';
 

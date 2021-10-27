@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 import assert from 'assert';
 
-import * as common from '../common';
+import * as common from '../common.js';
 
 const BASE_URL: string = `${common.BASE_URL}/api/health`;
 

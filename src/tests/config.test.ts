@@ -1,7 +1,7 @@
 import assert from 'assert';
 import path from 'path';
 
-import config from '../config';
+import config from '../config.js';
 
 const ROOT_DIRECTORY: string = 'web';
 const PORT: number = 8080;

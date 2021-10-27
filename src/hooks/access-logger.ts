@@ -1,10 +1,14 @@
 import pino from 'pino';
 
 import path from 'path';
+import url from 'url';
 
-import config from '../config';
+import config from '../config.js';
 
 import type { onRequestAsyncHookHandler } from 'fastify';
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const logger = pino(pino.destination({
   dest: path.join(__dirname, '..', config.accessLog)

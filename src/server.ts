@@ -2,15 +2,19 @@ import fastify from 'fastify';
 
 import fs from 'fs';
 import path from 'path';
+import url from 'url';
 
-import config from './config';
+import config from './config.js';
 
-import requestLogger from './hooks/access-logger'
+import requestLogger from './hooks/access-logger.js'
 
-import apiPlugin from './plugins/api';
-import webPlugin from './plugins/web'
+import apiPlugin from './plugins/api.js';
+import webPlugin from './plugins/web.js'
 
 import type { FastifyInstance } from 'fastify';
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const ERROR_EXIT_CODE: number = 1;
 const PID_FILE: string = path.join(__dirname, 'webhost.pid');
