@@ -1,6 +1,6 @@
 {
   "name": "webhost",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "author": "alextsang@live.com",
   "description": "A simple web server.",
   "repository": {
