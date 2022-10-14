@@ -1,4 +1,4 @@
-import fastifyStatic from 'fastify-static';
+import fastifyStatic from '@fastify/static';
 
 import path from 'path';
 import url from 'url';

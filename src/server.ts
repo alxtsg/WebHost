@@ -35,7 +35,7 @@ const writePidFile = async () => {
 
 const start = async () => {
   try {
-    await server.listen(config.port);
+    await server.listen({port: config.port});
     await writePidFile();
   } catch (error) {
     console.error('Error occurred when starting server.');

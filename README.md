@@ -9,7 +9,7 @@ WebHost is expected to run behind a reverse proxy (e.g. HAProxy).
 
 ## Requirements ##
 
-* Node.js (`>=12`).
+* Node.js (`>=16`).
 
 ## Installation ##
 
