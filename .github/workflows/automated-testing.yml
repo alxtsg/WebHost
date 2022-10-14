@@ -3,8 +3,40 @@ name: Automated testing
 on: push
 
 jobs:
-  test:
+  test-linux:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        registry-url: 'https://registry.npmjs.org'
+
+    # Build
+    - name: Install dependencies (build)
+      run: npm clean-install
+    - name: Clean environment
+      run: npm run clean
+    - name: Build project for testing
+      run: npm run build-test
+
+    # Test
+    - name: Install dependencies (test)
+      run: npm clean-install
+      working-directory: ./dist
+    - name: Run test cases
+      run: npm run test
+      working-directory: ./dist
+
+  test-windows:
+    runs-on: windows-latest
 
     strategy:
       matrix:
