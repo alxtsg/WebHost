@@ -8,7 +8,7 @@ import type AppConfig from './types/app-config.js';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const ENV_FILE: string = path.join(__dirname, '.env');
+const ENV_FILE = path.join(__dirname, '.env');
 
 const config: AppConfig = {
   rootDirectory: '',
@@ -31,7 +31,7 @@ const loadConfig = (): void => {
   }
   const envConfig = result.parsed;
   config.rootDirectory = envConfig.ROOT_DIRECTORY;
-  let portNumber: number = Number(envConfig.PORT);
+  let portNumber = Number(envConfig.PORT);
   if (!Number.isInteger(portNumber) ||
     !isValidPortRange(portNumber)) {
     throw new Error('Invalid port number.');

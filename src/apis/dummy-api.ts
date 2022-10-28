@@ -2,7 +2,7 @@ import { FastifyPluginCallback } from 'fastify';
 
 import DummyError from '../errors/dummy-error.js';
 
-const BASE_PATH: string = '/dummies'
+const BASE_PATH = '/dummies';
 
 const callback: FastifyPluginCallback = (server, options, done) => {
   server.get(BASE_PATH, async (request, reply) => {

@@ -3,10 +3,10 @@ import path from 'path';
 
 import config from '../config.js';
 
-const ROOT_DIRECTORY: string = 'web';
-const PORT: number = 8080;
-const ERROR_PAGE: string = '404.html';
-const ACCESS_LOG: string = path.join('logs', 'access.log');
+const ROOT_DIRECTORY = 'web';
+const PORT = 8080;
+const ERROR_PAGE = '404.html';
+const ACCESS_LOG = path.join('logs', 'access.log');
 
 describe('Configurations module', async () => {
   it('can load configurations', async () => {

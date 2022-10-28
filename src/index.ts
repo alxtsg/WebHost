@@ -1,6 +1,6 @@
 import server from './server.js';
 
-process.on('beforeExit', (): void => {
+process.on('beforeExit', () => {
   server.close()
     .then(
       () => {

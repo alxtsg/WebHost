@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 import assert from 'assert';
-import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
 import url from 'url';
 
@@ -11,10 +11,8 @@ import config from '../config.js';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const WEB_ROOT: string = path.join(__dirname, '..', config.rootDirectory);
-const NOT_FOUND_PAGE: string = path.join(WEB_ROOT, '404.html');
-
-const fsPrommises = fs.promises;
+const WEB_ROOT = path.join(__dirname, '..', config.rootDirectory);
+const NOT_FOUND_PAGE = path.join(WEB_ROOT, '404.html');
 
 describe('Web server', async () => {
   it('can serve static files', async () => {
@@ -25,17 +23,17 @@ describe('Web server', async () => {
   });
 
   it('can serve customized 404 page', async () => {
-    const notFoundPage: string = await fsPrommises.readFile(
+    const notFoundPage = await fsPromises.readFile(
       NOT_FOUND_PAGE,
       {
         encoding: 'utf8'
       }
     );
     await assert.doesNotReject(async () => {
-      const url: string = `${common.BASE_URL}/does-not-exist`;
+      const url = `${common.BASE_URL}/does-not-exist`;
       const response = await fetch(url);
       assert.strictEqual(response.ok, false);
-      const responseBody: string = await response.text();
+      const responseBody = await response.text();
       assert.strictEqual(responseBody, notFoundPage);
     });
   });

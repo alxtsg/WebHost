@@ -10,7 +10,7 @@ import type { FastifyPluginCallback } from 'fastify';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const WEB_ROOT: string = path.join(__dirname, '..', config.rootDirectory);
+const WEB_ROOT = path.join(__dirname, '..', config.rootDirectory);
 
 const callback: FastifyPluginCallback = async (server, options) => {
   server.register(fastifyStatic, {

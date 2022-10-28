@@ -1,27 +1,23 @@
 import fastify from 'fastify';
 
-import fs from 'fs';
+import fsPromises from 'fs/promises';
 import path from 'path';
 import url from 'url';
 
 import config from './config.js';
 
-import requestLogger from './hooks/access-logger.js'
+import requestLogger from './hooks/access-logger.js';
 
 import apiPlugin from './plugins/api.js';
-import webPlugin from './plugins/web.js'
-
-import type { FastifyInstance } from 'fastify';
+import webPlugin from './plugins/web.js';
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const ERROR_EXIT_CODE: number = 1;
-const PID_FILE: string = path.join(__dirname, 'webhost.pid');
+const ERROR_EXIT_CODE = 1;
+const PID_FILE = path.join(__dirname, 'webhost.pid');
 
-const fsPromises = fs.promises;
-
-const server: FastifyInstance = fastify();
+const server = fastify();
 
 server.register(apiPlugin, { prefix: '/api' });
 server.register(webPlugin);
@@ -29,7 +25,7 @@ server.register(webPlugin);
 server.addHook('onRequest', requestLogger);
 
 const writePidFile = async () => {
-  const content: string = `${process.pid}`;
+  const content = `${process.pid}`;
   await fsPromises.writeFile(PID_FILE, content);
 };
 

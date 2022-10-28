@@ -4,7 +4,7 @@ import assert from 'assert';
 
 import * as common from '../common.js';
 
-const BASE_URL: string = `${common.BASE_URL}/api/health`;
+const BASE_URL = `${common.BASE_URL}/api/health`;
 
 describe('Health API', async () => {
   it('can get health status', async () => {

@@ -4,7 +4,7 @@ import assert from 'assert';
 
 import * as common from '../common.js';
 
-const BASE_URL: string = `${common.BASE_URL}/api/dummies`;
+const BASE_URL = `${common.BASE_URL}/api/dummies`;
 
 describe('Dummy API', async () => {
   it('the API is a teapot', async () => {
