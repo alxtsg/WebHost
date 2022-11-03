@@ -11,9 +11,17 @@ WebHost is expected to run behind a reverse proxy (e.g. HAProxy).
 
 * Node.js (`>=16`).
 
-## Installation ##
+## Build ##
 
-0. `npm clean-install --production`.
+Run:
+
+```
+npm clean-install
+npm run clean
+npm run build-release
+```
+
+The `dist` directory contains files ready for deployment.
 
 ## Configuration ##
 
@@ -28,15 +36,16 @@ controls the following:
 * `ACCESS_LOG`: Path of access log. The path is relative to the installation
                 directory.
 
-## Usage ##
-
-Run:
+## Run ##
 
 ```
-node index.js
+# Installation of dependencies is required for fresh deployment only.
+npm clean-install --omit=dev
+
+npm run start
 ```
 
-On OpenBSD, the script `control.sh` can be used to control WebHost.
+On OpenBSD, the script `control.sh` can be used to control the application.
 
 Start WebHost:
 
@@ -62,38 +71,38 @@ Query WebHost running status:
 sh control.sh status
 ```
 
-## Build ##
+## Test ##
 
-Before building, install dependencies and remove the old build:
+Run:
 
 ```
 npm clean-install
 npm run clean
-```
-
-To build the project for release, run:
-
-```
-npm run build-release
-```
-
-The `dist` directory contains files ready for release.
-
-To build the project for testing, run:
-
-```
 npm run build-test
-```
 
-The `dist` directory contains files ready for testing.
-
-## Testing ##
-
-Build the project for testing, navigate to the `dist` directory and run:
-
-```
+cd dist
 npm clean-install
 npm run test
+```
+
+All test cases should pass, and the report should look similar to the following:
+
+```
+  Dummy API
+    ✔ the API is a teapot
+
+  Health API
+    ✔ can get health status
+
+  Configurations module
+    ✔ can load configurations
+
+  Web server
+    ✔ can serve static files
+    ✔ can serve customized 404 page
+
+
+  5 passing (52ms)
 ```
 
 ## License ##
