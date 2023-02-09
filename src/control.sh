@@ -4,18 +4,19 @@
 # Author: Alex TSANG <alextsang@live.com>
 # License: BSD-3-Clause
 
+set -e
 set -u
 IFS="$(printf '\n\t')"
 
 baseDirectory="$(cd "$(dirname "${0}")"; pwd)"
-webhostScript="${0}"
+controlScript="${0}"
 pidFile="${baseDirectory}/webhost.pid"
 action="${1:-usage}"
 
 cd "${baseDirectory}"
 
 usage() {
-  echo "${webhostScript} <start | stop | restart | status>"
+  echo "${controlScript} <start | stop | restart | status>"
 }
 
 getPid() {
@@ -23,31 +24,35 @@ getPid() {
     echo ""
     return
   fi
-  content=$(cat "${pidFile}")
-  if [ -n "$(ps -p "${content}" -o pid=)" ]; then
-    echo "${content}"
-  else
-    echo ""
-  fi
+  cat "${pidFile}"
 }
 
 startApp() {
-  result="$(getPid)"
-  if [ -n "${result}" ]; then
-    echo "WebHost is already running (PID: ${result})."
-    exit 1
+  pid="$(getPid)"
+  if [ -n "${pid}" ]; then
+    echo "WebHost is already running (PID: ${pid})."
+    exit 0
   fi
+
   export NODE_ENV='production'
   date -u '+%Y-%m-%dT%H:%M:%SZ Starting WebHost.' >> nohup.out
-  nohup node "${baseDirectory}"/index.js &
+  nohup node "${baseDirectory}/index.js" &
+  pid="${!}"
+  echo "${pid}" > "${pidFile}"
+  date -u '+%Y-%m-%dT%H:%M:%SZ Started WebHost.' >> nohup.out
 }
 
 stopApp() {
-  result="$(getPid)"
-  if [ -n "${result}" ]; then
-    date -u '+%Y-%m-%dT%H:%M:%SZ Stopping WebHost.' >> nohup.out
-    kill "${result}"
+  pid="$(getPid)"
+  if [ -z "${pid}" ]; then
+    echo 'WebHost is not running.'
+    exit 0
   fi
+
+  date -u '+%Y-%m-%dT%H:%M:%SZ Stopping WebHost.' >> nohup.out
+  kill "${pid}"
+  rm "${pidFile}"
+  date -u '+%Y-%m-%dT%H:%M:%SZ Stopped WebHost.' >> nohup.out
 }
 
 restartApp() {
@@ -56,11 +61,11 @@ restartApp() {
 }
 
 status() {
-  result="$(getPid)"
-  if [ -n "${result}" ]; then
-    echo "Active, PID is ${result}."
+  pid="$(getPid)"
+  if [ -n "${pid}" ]; then
+    echo "WebHost is running (PID: ${pid})."
   else
-    echo "Inactive."
+    echo 'WebHost is not running.'
   fi
 }
 
