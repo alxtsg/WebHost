@@ -1,6 +1,6 @@
 {
   "name": "webhost",
-  "version": "8.1.1",
+  "version": "8.2.0",
   "author": "alextsang@live.com",
   "description": "A simple web server.",
   "repository": {
